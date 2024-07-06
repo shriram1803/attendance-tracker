@@ -1,18 +1,18 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface Course extends Document{
+    _id?: Schema.Types.ObjectId,
     courseCode: string;
     courseName: string;
     totalHours: number;
-    attendedHourse: number;
+    attendedHours: number;
 };
 
-const courseSchema = new Schema<Course>(
+export const courseSchema = new Schema<Course>(
     {
         courseCode:  {
             type: String,
             required: true,
-            unique: true
         },
         courseName: {
             type: String,
@@ -22,7 +22,7 @@ const courseSchema = new Schema<Course>(
             type: Number,
             required: true
         },
-        attendedHourse: {
+        attendedHours: {
             type: Number,
             required: true
         }
