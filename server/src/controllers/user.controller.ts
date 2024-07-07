@@ -18,7 +18,8 @@ export const addUser = async (req: Request, res: Response) => {
         const user: User = new userModel({
             eMail: eMail,
             password: hashedPassword,
-            safePercentage: safePercentage
+            safePercentage: safePercentage,
+            courses: []
         });
 
         await user.save();
@@ -34,7 +35,7 @@ export const addUser = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
     try {
         const { eMail, password } = req.body;
-        const user: User = await userModel.findOne({ eMail: eMail });
+        const user: User = await userModel.findOne({ eMail: eMail }).populate('courses');
 
         if (!user) {
             return res.status(401).json({ error: "User Not Available" });
@@ -55,8 +56,9 @@ export const login = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const { id, eMail, password, safePercentage } = req.body;
-        const user: User = await userModel.findById(id);
+        const { id } = req.params;
+        const { eMail, password, safePercentage } = req.body;
+        const user: User = await userModel.findById(id).populate('courses');
 
         if (!user) {
             return res.status(401).json({ error: "User Not Available" });
@@ -79,6 +81,17 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const validateUser = async (req: Request, res: Response) => {
-    // already verified in authMiddleware
-    return res.status(200).json({ message: "User Verified" });
+    try {
+        const { userId } = req.body;
+        
+        const user: User = await userModel.findById(userId).populate('courses');
+
+        if (!user) {
+            return res.status(401).json({ error: "User Not Available" });
+        }
+        
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ error: "Errer fetching user data" });
+    }
 };

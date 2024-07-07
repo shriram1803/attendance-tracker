@@ -5,7 +5,7 @@ import courseModel, { Course } from "../models/course.model.js";
 
 export const addCourse = async (req: Request, res: Response) => {
     try {
-        const { id, courseCode, courseName } = req.body;
+        const { userId, courseCode, courseName } = req.body;
 
         const course: Course = new courseModel({
             courseCode,
@@ -16,7 +16,7 @@ export const addCourse = async (req: Request, res: Response) => {
 
         const savedCourse: Course = await course.save();
 
-        const user: User = await userModel.findById(id);
+        const user: User = await userModel.findById(userId);
 
         user.courses.push(savedCourse._id);
 
@@ -57,12 +57,19 @@ export const updateCourse = async (req: Request, res: Response) => {
 export const removeCourse = async (req: Request, res: Response) => {
     try {
         const { courseId } = req.params;
+        const { userId } = req.body;
         
         const deleted: boolean = await courseModel.findByIdAndDelete(courseId);
 
         if(!deleted) {
             return res.status(401).json({error: "id not found"});
         }
+
+        const user: User = await userModel.findById(userId);
+        
+        user.courses = user.courses.filter(course => course.toString() !== courseId);
+
+        await user.save();
 
         res.status(200).json({message: "Deleted course"});
     } catch(err) {
