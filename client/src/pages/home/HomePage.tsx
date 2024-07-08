@@ -1,18 +1,22 @@
+import CourseCard from "../../components/card/CourseCard";
 import { useDataContext } from "../../contexts/dataContext";
 
 const HomePage = () => {
-    const { user, logout } = useDataContext();
+    const { user, isLoading } = useDataContext();
 
     return (
         <>
-            {user?.courses.map((course, index) => (
-                <div key={index}>
-                    <p>{course.courseCode}</p>                    
+            {isLoading ? (
+                <div> 
+                    <h2>Loading......</h2> 
                 </div>
-            ))}
-            <button value={'logout'} onClick={logout} >
-                logout
-            </button>
+            ) : (
+                <div className="grid grid-cols-4 p-5">
+                    {user?.courses && user.courses.map((course, index) => (
+                        <CourseCard index={index} course={course} />
+                    ))}
+                </div>
+            )}
         </>
     );
 };

@@ -1,9 +1,6 @@
-// DataContext.tsx
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { Course } from '../types/courseType';
 import { User } from '../types/userType';
 import { loginUser, validateUser } from '../apis/userApi';
-import { Console, error } from 'console';
 import { useNavigate } from 'react-router-dom';
 
 export interface DataContextType {
@@ -44,8 +41,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         await loginUser(eMail, password)
             .then((responseData) => {
                 localStorage.setItem('token', responseData.token);
-                console.log('setting into local storage')
-
+                
                 const userData: User = {
                     userId: responseData._id,
                     eMail: responseData.eMail,
@@ -56,6 +52,10 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 setUser(userData);
                 
                 setAuthToken(responseData.token);
+
+                setIsLoading(false);
+
+                navigate('/');
             })
             .catch((error) => {
                 console.error('Error loggin in user:', error.response ? error.response.data : error.message);
@@ -94,17 +94,9 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                         safePercentage: response.safePercentage,
                         courses: response.courses
                     } as User;
-                    
-                    console.log('a')
 
                     setUser(userData);        
                     setIsLoading(false);
-
-                    console.log('b')
-
-                    navigate('/');
-
-                    console.log('c')
                 })
                 .catch((error) => {
                     logout();
@@ -140,7 +132,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
 };
 
 export const useDataContext = (): DataContextType => {
-    const context = useContext(DataContext) as DataContextType;
+    const context: DataContextType = useContext(DataContext) as DataContextType;
     if (context === undefined) {
         throw new Error('useDataContext must be used within a DataContextProvider');
     }

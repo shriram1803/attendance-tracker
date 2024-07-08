@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useDataContext } from "../../../contexts/dataContext";
+import { useState } from "react";
+import { useDataContext } from "../../contexts/dataContext";
 
-const Login = () => {
+const Register = () => {
     const { login } = useDataContext();
 
     const [email, setEmail] = useState<string>('');
@@ -22,4 +22,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;

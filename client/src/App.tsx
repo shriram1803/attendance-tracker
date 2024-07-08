@@ -1,14 +1,9 @@
-import React from 'react';
-import { DataContextProvider } from './contexts/dataContext';
-import AppRoutes from './routes/Routes';
+import RouterMain from './routes';
 
 const App = () => {
-  // console.log(process.env.BACKEND_URL)
-
-  
   return (
     <>
-      <AppRoutes />
+      <RouterMain />
     </>
   );
 }

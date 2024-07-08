@@ -1,26 +1,31 @@
-import { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
+import EditCoursePage from "../pages/editCourse/EditCoursePage";
 import HomePage from "../pages/home/HomePage";
-import Login from "../pages/home/login/Login";
-import ProtectedRoutes from "./ProtectedRoutes";
-import { DataContextProvider } from "../contexts/dataContext";
 
-const AppRoutes = () => {
-
-    return (
-        <BrowserRouter>
-            <DataContextProvider>
-                <Routes>
-                    <Route element={<ProtectedRoutes />} >
-                        <Route index path="/" element={<HomePage />} />
-                    </Route>
-                    <Route path="/login" element={<Login />} />
-                </Routes>
-            </DataContextProvider>
-        </BrowserRouter>
-
-    );
+export interface RouteType {
+    path: string;
+    component: React.ReactElement;
+    index?: boolean;
 };
 
+const appRoutes: RouteType[] = [
+    {
+        path: '/',
+        component: <HomePage />,
+        index: true
+    },
+    {
+        path: 'editcourse',
+        component: <EditCoursePage />
+    }
+];
 
-export default AppRoutes;
+const RoutesProvider = (routes: RouteType[]): React.ReactNode => {
+    return routes.map((route) => (
+        <Route path={route.path} element={route.component} />
+    ));
+};
+
+const routes: React.ReactNode = RoutesProvider(appRoutes);
+
+export default routes;
