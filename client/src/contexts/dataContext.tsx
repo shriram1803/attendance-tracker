@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { User } from '../types/userType';
-import { loginUser, validateUser } from '../apis/userApi';
+import { loginUser, validateUser, registerUser } from '../apis/userApi';
 import { useNavigate } from 'react-router-dom';
+import { addCourse, removeCourse } from '../apis/courseApi';
 
 export interface DataContextType {
     user: User | null;
@@ -10,8 +11,11 @@ export interface DataContextType {
     setAuthToken: (token: string | null) => void;
     isLoading: boolean;
     setIsLoading: (value: boolean) => void;
+    register: (eMail: string, password: string, safePercentage: string) => void;
     login: (eMail: string, password: string) => void;
     logout: () => void;
+    add: (courseCode: string, courseName: string) => void;
+    remove: (courseId: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -36,29 +40,42 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
     //         courses: data.courses
     //     } as User;
     // };
+    const handleLoginSuccess = (user: any) => {
+        localStorage.setItem('token', user.token);
 
-    const login = async (eMail: string, password: string) => {
-        await loginUser(eMail, password)
+        const userData: User = {
+            userId: user._id,
+            eMail: user.eMail,
+            safePercentage: user.safePercentage,
+            courses: user.courses
+        } as User;
+
+        setUser(userData);
+
+        setAuthToken(user.token);
+
+        setIsLoading(false);
+
+        navigate('/');
+    };
+
+    const login = (eMail: string, password: string) => {
+        loginUser(eMail, password)
             .then((responseData) => {
-                localStorage.setItem('token', responseData.token);
-                
-                const userData: User = {
-                    userId: responseData._id,
-                    eMail: responseData.eMail,
-                    safePercentage: responseData.safePercentage,
-                    courses: responseData.courses
-                } as User;
-
-                setUser(userData);
-                
-                setAuthToken(responseData.token);
-
-                setIsLoading(false);
-
-                navigate('/');
+                handleLoginSuccess(responseData);
             })
             .catch((error) => {
                 console.error('Error loggin in user:', error.response ? error.response.data : error.message);
+            });
+    };
+
+    const register = (email: string, password: string, safePercentage: string) => {
+        registerUser(email, password, Number(safePercentage))
+            .then((responseData) => {
+                handleLoginSuccess(responseData);
+            })
+            .catch((error) => {
+                console.error('Error registering user:', error.response ? error.response.data : error.message);
             });
     };
 
@@ -69,17 +86,47 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         navigate('/');
     };
 
-    // useEffect(() => {
-    //     checkLocalStorage();
-    // }, []);
+    const add = (courseCode: string, courseName: string) => {
+        addCourse(courseCode, courseName, authToken || '')
+            .then((responseData) => {
+                if (user) {
+                    setUser({
+                        ...user,
+                        courses: [...user.courses, responseData]
+                    } as User);
+                }
+            })
+            .catch((error) => {
+                console.error('Error registering user:', error.response ? error.response.data : error.message);
+            });
+    };
+
+    const remove = (courseId: string) => {
+        setIsLoading(true);
+        removeCourse(courseId, authToken || '')
+            .then((responseData) => {
+                if (user) {
+                    const updatedUser: User = {
+                        ...user,
+                        courses: user.courses.filter(course => course.courseId !== courseId)
+                    } as User;
+
+                    setUser(updatedUser);
+                    setIsLoading(true);
+                }
+            })
+            .catch((error) => {
+                console.error('Error registering user:', error.response ? error.response.data : error.message);
+            });
+    };
 
     useEffect(() => {
         const checkLocalStorage = () => {
             const storedToken: string = localStorage.getItem('token') || '';
 
-            if(!storedToken) 
+            if (!storedToken)
                 navigate('/login');
-            
+
             setAuthToken(storedToken);
         };
 
@@ -95,7 +142,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                         courses: response.courses
                     } as User;
 
-                    setUser(userData);        
+                    setUser(userData);
                     setIsLoading(false);
                 })
                 .catch((error) => {
@@ -103,7 +150,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     console.error('Error validating user:', error.response ? error.response.data : error.message);
                 });
         };
-    
+
 
         if (authToken) {
             loadUserData();
@@ -122,8 +169,11 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 setAuthToken,
                 isLoading,
                 setIsLoading,
+                register,
                 login,
-                logout
+                logout,
+                add,
+                remove
             }}
         >
             {children}

@@ -6,6 +6,7 @@ export interface Course extends Document{
     courseName: string;
     totalHours: number;
     attendedHours: number;
+    unknownHours: number;
 };
 
 export const courseSchema = new Schema<Course>(
@@ -23,6 +24,10 @@ export const courseSchema = new Schema<Course>(
             required: true
         },
         attendedHours: {
+            type: Number,
+            required: true
+        },
+        unknownHours: {
             type: Number,
             required: true
         }

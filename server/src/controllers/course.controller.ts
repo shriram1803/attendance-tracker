@@ -11,7 +11,8 @@ export const addCourse = async (req: Request, res: Response) => {
             courseCode,
             courseName,
             totalHours: 0,
-            attendedHours: 0
+            attendedHours: 0,
+            unknownHours: 0
         });
 
         const savedCourse: Course = await course.save();
@@ -22,7 +23,7 @@ export const addCourse = async (req: Request, res: Response) => {
 
         await user.save();
 
-        res.status(200).json({message: "Added course"});
+        res.status(200).json(course);
     } catch(err) {
         res.status(500).json({error: "Could not add course detail"});
     }
@@ -31,7 +32,7 @@ export const addCourse = async (req: Request, res: Response) => {
 export const updateCourse = async (req: Request, res: Response) => {
     try {
         const { courseId } = req.params;
-        const { courseCode, courseName, attendedHours, totalHours } = req.body;
+        const { courseCode, courseName, attendedHours, totalHours, unknownHours } = req.body;
 
         const course: Course = await courseModel.findById(courseId);
 
@@ -43,7 +44,8 @@ export const updateCourse = async (req: Request, res: Response) => {
             courseCode: courseCode || course.courseCode,
             courseName: courseName || course.courseName,
             attendedHours: attendedHours || course.attendedHours,
-            totalHours: totalHours || course.totalHours
+            totalHours: totalHours || course.totalHours,
+            unknownHours: unknownHours || course.unknownHours
         } as Course;
 
         await courseModel.findOneAndUpdate({_id: courseId}, updatedCourseDetails);
@@ -104,10 +106,11 @@ export const getAllCourses = async (req: Request, res: Response) => {
 export const incrementAttendance = async (req: Request, res: Response) => {    
     try {
         const { courseId } = req.params;
+        const { field } = req.body;
 
         const course = await courseModel.findByIdAndUpdate(
             courseId,
-            { $inc: { attendedHours: 1 } },
+            { $inc: { [field || 'attendedHours']: 1 } },
             { new: true }
         );
         
@@ -124,10 +127,11 @@ export const incrementAttendance = async (req: Request, res: Response) => {
 export const decrementAttendance = async (req: Request, res: Response) => {    
     try {
         const { courseId } = req.params;
+        const { field } = req.body;
 
         const course = await courseModel.findByIdAndUpdate(
             courseId,
-            { $inc: { attendedHours: -1 } },
+            { $inc: { [field || 'attendedHours']: -1 } },
             { new: true }
         );
         

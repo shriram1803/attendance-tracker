@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom";
 import EditCoursePage from "../pages/editCourse/EditCoursePage";
 import HomePage from "../pages/home/HomePage";
+import AddCoursePage from "../pages/addCourse/AddCourse";
 
 export interface RouteType {
     path: string;
@@ -15,8 +16,12 @@ const appRoutes: RouteType[] = [
         index: true
     },
     {
-        path: 'editcourse',
+        path: 'edit',
         component: <EditCoursePage />
+    },
+    {
+        path: 'add',
+        component: <AddCoursePage />
     }
 ];
 

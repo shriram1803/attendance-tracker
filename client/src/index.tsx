@@ -7,6 +7,8 @@ import "./index.css";
 
 // dotenv.config();
 
+console.log(process.env.REACT_APP_SERVER_URL)
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
