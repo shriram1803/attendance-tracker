@@ -216,7 +216,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     setUser(userData);
                 })
                 .catch((error) => {
-                    logout();
+                    // logout();
                     console.error('Error validating user:', error.response ? error.response.data : error.message);
                 })
                 .finally(() => setIsLoading(false));

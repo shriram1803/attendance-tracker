@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AttendaceFieldType, Course } from "../../types/courseType";
-import { removeCourse } from "../../apis/courseApi";
 import { useDataContext } from "../../contexts/dataContext";
 
 interface CourseCardProps {
@@ -17,16 +16,10 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
 
     const pseudoPercent: number = course.totalHours ? Number(((course.attendedHours + course.unknownHours) * 100 / course.totalHours).toFixed(2)) : 0;
 
-    const displayColor: string = (percent >= (user?.safePercentage || 75))
-        ? 'bg-lime-400'
-        : (pseudoPercent >= (user?.safePercentage || 75))
-            ? 'bg-yellow-500'
-            : 'bg-red-500';
-
-
     const [attendedHours, setAttendedHours] = useState<number>(course.attendedHours);
     const [unknownHours, setUnknownHours] = useState<number>(course.unknownHours);
     const [totalHours, setTotalHours] = useState<number>(course.totalHours);
+
 
     const handleEdit = () => {
         const updatedCourse: Course = {
@@ -55,7 +48,14 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         }
     };
 
+    
+    const displayColor: string = (percent >= (user?.safePercentage || 75))
+        ? 'bg-lime-400'
+        : (pseudoPercent >= (user?.safePercentage || 75))
+            ? 'bg-yellow-500'
+            : 'bg-red-500';
 
+    
     return (
         <div key={props.index} className="col-span-1 grid grid-rows-18 md:grid-rows-6 w-64 lg:w-72 h-72 lg:h-56 rounded-lg mx-4 border-b-4 border-r-2 border-gray-600 shadow-xl">
             <div className="row-span-3 md:row-span-1 flex flex-row justify-between text-sm font-medium border-b-2 border-gray-600 p-2 bg-gray-200 rounded-t-lg">
@@ -134,7 +134,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
                                 onClick={() => {
                                     handleDecrement('totalHours');
-                                    setTotalHours(totalHours + 1);
+                                    setTotalHours(totalHours - 1);
                                 }}
                             >
                                 -
@@ -150,7 +150,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
                                 onClick={() => {
                                     handleIncrement('totalHours');
-                                    setTotalHours(totalHours - 1);
+                                    setTotalHours(totalHours + 1);
                                 }}
                             >
                                 +
@@ -167,7 +167,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
                                 onClick={() => {
                                     handleDecrement('unknownHours');
-                                    setUnknownHours(unknownHours + 1);
+                                    setUnknownHours(unknownHours - 1);
                                 }}
                             >
                                 -
@@ -183,7 +183,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
                                 onClick={() => {
                                     handleIncrement('unknownHours');
-                                    setUnknownHours(unknownHours - 1);
+                                    setUnknownHours(unknownHours + 1);
                                 }}
                             >
                                 +
@@ -198,21 +198,6 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                 <div className="text-sm font-medium text-gray-700"> Attendance Percentage</div>
                 <div className="text-2xl font-semibold" >{percent} %</div>
             </div>
-
-            {/* <div className="flex flex-row w-full text-center justify-evenly">
-                <button
-                    className="rounded-full h-10 w-24 border-cyan-950 bg-zinc-300 border-2 hover:bg-zinc-200"
-                    onClick={handleEdit}
-                >
-                    Edit
-                </button>
-                <button
-                    className="rounded-full h-10 w-24 border-cyan-950 bg-zinc-300 border-2 hover:bg-zinc-200"
-                    onClick={handleDelete}
-                >
-                    Delete
-                </button>
-            </div> */}
 
         </div>
     );
