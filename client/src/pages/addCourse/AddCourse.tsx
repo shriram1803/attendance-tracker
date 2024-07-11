@@ -9,6 +9,8 @@ const AddCoursePage = () => {
 
   const handleSubmit = () => {
     add(courseCode, courseName);
+    setCourseCode('');
+    setCourseName('');
   };
 
   return (

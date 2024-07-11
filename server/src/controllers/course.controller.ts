@@ -106,11 +106,11 @@ export const getAllCourses = async (req: Request, res: Response) => {
 export const incrementAttendance = async (req: Request, res: Response) => {    
     try {
         const { courseId } = req.params;
-        const { field } = req.body;
+        const { targetField } = req.body;
 
         const course = await courseModel.findByIdAndUpdate(
             courseId,
-            { $inc: { [field || 'attendedHours']: 1 } },
+            { $inc: { [targetField]: 1 } },
             { new: true }
         );
         
@@ -127,11 +127,11 @@ export const incrementAttendance = async (req: Request, res: Response) => {
 export const decrementAttendance = async (req: Request, res: Response) => {    
     try {
         const { courseId } = req.params;
-        const { field } = req.body;
+        const { targetField } = req.body;
 
         const course = await courseModel.findByIdAndUpdate(
             courseId,
-            { $inc: { [field || 'attendedHours']: -1 } },
+            { $inc: { [targetField || 'attendedHours']: -1 } },
             { new: true }
         );
         

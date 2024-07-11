@@ -14,16 +14,16 @@ const HomePage = () => {
         <div>
             <div className="border-gray-700 border-b-2">
                 <button
-                onClick={() => navigate('/add')}
+                    onClick={() => navigate('/add')}
                 >
                     Add Course
                 </button>
             </div>
-        <div className="grid grid-cols-4 justify-center md:justify-start p-5">
-            {user?.courses && user.courses.map((course, index) => (
-                <CourseCard index={index} course={course} />
-            ))}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 justify-items-center md:justify-start p-5">
+                {user?.courses && user.courses.map((course, index) => (
+                    <CourseCard key={index} index={index} course={course} />
+                ))}
+            </div>
         </div>
     );
 };

@@ -11,11 +11,11 @@ const RouterMain = () => {
         <BrowserRouter>
             <DataContextProvider>
                 <Routes>
-                    <Route element={<ProtectedRoutes />} >
+                    <Route key={'protected'} element={<ProtectedRoutes />} >
                         {routes}
                     </Route>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route key={'login'} path="/login" element={<Login />} />
+                    <Route key={'register'} path="/register" element={<Register />} />
                 </Routes>
             </DataContextProvider>
         </BrowserRouter>

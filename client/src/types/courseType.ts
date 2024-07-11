@@ -1,6 +1,5 @@
 export interface Course {
-    _id?: string;
-    courseId: string;
+    _id: string;
     courseCode: string;
     courseName: string;
     attendedHours: number;
@@ -8,6 +7,6 @@ export interface Course {
     unknownHours: number;
 };
 
-export type CourseFieldType = 'attendedHours' | 'totalHours' | 'unknownHours' | null;
+export type AttendaceFieldType = 'attendedHours' | 'totalHours' | 'unknownHours' | null;
 
 export type Courses = Array<Course>;

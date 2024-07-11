@@ -46,7 +46,7 @@ const Register = () => {
                     onChange={(e) => {
                         setSafePercentage(e.target.value);
                         if (e.target.value && !isNumber(e.target.value)) {
-                            setError('Enter numbers only in required percentage field!!')
+                            setError('Enter numbers only in required percentage!!')
                         } else {
                             setError('');
                         }
@@ -60,7 +60,7 @@ const Register = () => {
                     Register
                 </button>
                 <span className="text-xs  text-center my-2">Have an account? <a className=" cursor-pointer hover:text-cyan-600 hover:underline" onClick={() => navigate('/login')}> Login </a> </span>
-                <p className="text-red-600">{error}</p>
+                <p className="text-red-600 text-sm">{error}</p>
                 </div>
             </div>
         </div>
