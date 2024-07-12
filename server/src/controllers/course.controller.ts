@@ -10,7 +10,7 @@ export const addCourse = async (req: Request, res: Response) => {
         const course: Course = new courseModel({
             courseCode,
             courseName,
-            totalHours: 0,
+            missedHours: 0,
             attendedHours: 0,
             unknownHours: 0
         });
@@ -32,7 +32,7 @@ export const addCourse = async (req: Request, res: Response) => {
 export const updateCourse = async (req: Request, res: Response) => {
     try {
         const { courseId } = req.params;
-        const { courseCode, courseName, attendedHours, totalHours, unknownHours } = req.body;
+        const { courseCode, courseName, attendedHours, missedHours, unknownHours } = req.body;
 
         const course: Course = await courseModel.findById(courseId);
 
@@ -44,7 +44,7 @@ export const updateCourse = async (req: Request, res: Response) => {
             courseCode: courseCode || course.courseCode,
             courseName: courseName || course.courseName,
             attendedHours: attendedHours || course.attendedHours,
-            totalHours: totalHours || course.totalHours,
+            missedHours: missedHours || course.missedHours,
             unknownHours: unknownHours || course.unknownHours
         } as Course;
 

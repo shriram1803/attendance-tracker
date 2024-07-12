@@ -129,7 +129,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
             updatedCourse.courseCode, 
             updatedCourse.courseName, 
             updatedCourse.attendedHours, 
-            updatedCourse.totalHours, 
+            updatedCourse.missedHours, 
             updatedCourse.unknownHours, 
             authToken || ''
         ).then((responseData) => {

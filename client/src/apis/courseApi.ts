@@ -9,10 +9,10 @@ export const addCourse = async (courseCode: string, courseName: string, token?: 
     return await apiRequest(endpoint, method, data, token);
 };
 
-export const updateCourse = async (courseId: string, courseCode?: string, courseName?: string, attendedHours?: number, totalHours?: number, unknownHours?: number, token?: string) => {
+export const updateCourse = async (courseId: string, courseCode?: string, courseName?: string, attendedHours?: number, missedHours?: number, unknownHours?: number, token?: string) => {
     const endpoint = `/api/course/update/${courseId}`;
     const method = 'PUT';
-    const data = { courseCode, courseName, attendedHours, totalHours, unknownHours };
+    const data = { courseCode, courseName, attendedHours, missedHours, unknownHours };
 
     return await apiRequest(endpoint, method, data, token);
 };

@@ -3,10 +3,10 @@ export interface Course {
     courseCode: string;
     courseName: string;
     attendedHours: number;
-    totalHours: number;
+    missedHours: number;
     unknownHours: number;
 };
 
-export type AttendaceFieldType = 'attendedHours' | 'totalHours' | 'unknownHours' | null;
+export type AttendaceFieldType = 'attendedHours' | 'missedHours' | 'unknownHours' | null;
 
 export type Courses = Array<Course>;

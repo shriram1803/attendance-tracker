@@ -4,7 +4,7 @@ export interface Course extends Document{
     _id?: Schema.Types.ObjectId,
     courseCode: string;
     courseName: string;
-    totalHours: number;
+    missedHours: number;
     attendedHours: number;
     unknownHours: number;
 };
@@ -19,7 +19,7 @@ export const courseSchema = new Schema<Course>(
             type: String,
             required: true,
         },
-        totalHours: {
+        missedHours: {
             type: Number,
             required: true
         },

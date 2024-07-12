@@ -12,14 +12,15 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
 
     const course: Course = props.course;
 
-    const percent: number = course.totalHours ? Number((course.attendedHours * 100 / course.totalHours).toFixed(2)) : 0;
-
-    const pseudoPercent: number = course.totalHours ? Number(((course.attendedHours + course.unknownHours) * 100 / course.totalHours).toFixed(2)) : 0;
-
     const [attendedHours, setAttendedHours] = useState<number>(course.attendedHours);
     const [unknownHours, setUnknownHours] = useState<number>(course.unknownHours);
-    const [totalHours, setTotalHours] = useState<number>(course.totalHours);
+    const [missedHours, setMissedHours] = useState<number>(course.missedHours);
 
+    const totalHours: number = attendedHours + missedHours + unknownHours;
+
+    const percent: number = Number((course.attendedHours * 100 / totalHours).toFixed(2)) || 0;
+
+    const pseudoPercent: number = Number(((course.attendedHours + course.unknownHours) * 100 / totalHours).toFixed(2)) || 0;
 
     const handleEdit = () => {
         const updatedCourse: Course = {
@@ -27,7 +28,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
             courseCode: course.courseCode,
             courseName: course.courseName,
             attendedHours: attendedHours,
-            totalHours: totalHours,
+            missedHours: missedHours,
             unknownHours: unknownHours
         } as Course;
         edit(updatedCourse);
@@ -48,19 +49,22 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         }
     };
 
-    
+
     const displayColor: string = (percent >= (user?.safePercentage || 75))
         ? 'bg-lime-400'
         : (pseudoPercent >= (user?.safePercentage || 75))
             ? 'bg-yellow-500'
             : 'bg-red-500';
 
-    
+
     return (
         <div key={props.index} className="col-span-1 grid grid-rows-18 md:grid-rows-6 w-64 lg:w-72 h-72 lg:h-56 rounded-lg mx-4 border-b-4 border-r-2 border-gray-600 shadow-xl">
             <div className="row-span-3 md:row-span-1 flex flex-row justify-between text-sm font-medium border-b-2 border-gray-600 p-2 bg-gray-200 rounded-t-lg">
                 <div className="text-left">
-                    {course.courseName}
+                    <p className="cursor-default hover:text-gray-700" title={course.courseName}>
+                        {course.courseName.slice(0, 25)}
+                        {course.courseName.length > 25 && '...'}
+                    </p>
                 </div>
                 <div className="text-right flex flex-row">
                     <svg
@@ -128,13 +132,13 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                 </div>
                 <div className="flex w-full">
                     <div className="w-full grid grid-cols-2 items-center">
-                        <div className="col-span-2 lg:col-span-1"><span className="text-xs text-gray-700 my-4">Total Hours: </span></div>
+                        <div className="col-span-2 lg:col-span-1"><span className="text-xs text-gray-700 my-4">Missed Hours: </span></div>
                         <div className="col-span-2 lg:col-span-1 flex rounded border-2 border-gray-300">
                             <button
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
                                 onClick={() => {
-                                    handleDecrement('totalHours');
-                                    setTotalHours(totalHours - 1);
+                                    handleDecrement('missedHours');
+                                    setMissedHours(missedHours - 1);
                                 }}
                             >
                                 -
@@ -142,15 +146,15 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             <input
                                 className="w-12 bg-white text-center"
                                 type="text"
-                                value={totalHours}
-                                onChange={(e) => setTotalHours(Number(e.target.value))}
+                                value={missedHours}
+                                onChange={(e) => setMissedHours(Number(e.target.value))}
                                 onBlur={handleEdit}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
                                 onClick={() => {
-                                    handleIncrement('totalHours');
-                                    setTotalHours(totalHours + 1);
+                                    handleIncrement('missedHours');
+                                    setMissedHours(missedHours + 1);
                                 }}
                             >
                                 +
