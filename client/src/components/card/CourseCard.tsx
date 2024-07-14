@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, HtmlHTMLAttributes } from "react";
+import { debounce } from "lodash";
 import { AttendaceFieldType, Course } from "../../types/courseType";
 import { useDataContext } from "../../contexts/dataContext";
 
@@ -8,38 +9,19 @@ interface CourseCardProps {
 };
 
 const CourseCard = (props: CourseCardProps): React.ReactElement => {
-    const { user, edit, remove, increment, decrement } = useDataContext();
+    const { user, edit, remove } = useDataContext();
 
-    const course: Course = props.course;
+    const [course, setCourse] = useState<Course>(props.course);
 
-    const [attendedHours, setAttendedHours] = useState<number>(course.attendedHours);
-    const [unknownHours, setUnknownHours] = useState<number>(course.unknownHours);
-    const [missedHours, setMissedHours] = useState<number>(course.missedHours);
-
-    const totalHours: number = attendedHours + missedHours + unknownHours;
+    const totalHours: number = course.attendedHours + course.missedHours + course.unknownHours;
 
     const percent: number = Number((course.attendedHours * 100 / totalHours).toFixed(2)) || 0;
 
     const pseudoPercent: number = Number(((course.attendedHours + course.unknownHours) * 100 / totalHours).toFixed(2)) || 0;
 
-    const handleEdit = () => {
-        const updatedCourse: Course = {
-            _id: course._id,
-            courseCode: course.courseCode,
-            courseName: course.courseName,
-            attendedHours: attendedHours,
-            missedHours: missedHours,
-            unknownHours: unknownHours
-        } as Course;
-        edit(updatedCourse);
-    };
 
-    const handleIncrement = (targetField: AttendaceFieldType) => {
-        increment(course._id, targetField);
-    };
-
-    const handleDecrement = (targetField: AttendaceFieldType) => {
-        decrement(course._id, targetField);
+    const handleEdit = (course: Course) => {
+        edit(course);
     };
 
     const handleDelete = () => {
@@ -47,6 +29,35 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         if (isConfirmed) {
             remove(course._id);
         }
+    };
+
+
+    const debounceHandler = useCallback(debounce(handleEdit, 1000), []);
+
+    const setChange = (updatedCourse: Course) => {
+        setCourse(updatedCourse);
+        debounceHandler(updatedCourse);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, targetField: AttendaceFieldType) => {        
+        setChange({
+            ...course,
+            [targetField]: Number(e.target.value)
+        });
+    };
+
+    const handleIncrement = (targetField: AttendaceFieldType) => {
+        setChange({
+            ...course,
+            [targetField]: course[targetField] + 1
+        });
+    };
+
+    const handleDecrement = (targetField: AttendaceFieldType) => {
+        setChange({
+            ...course,
+            [targetField]: course[targetField] - 1
+        });
     };
 
 
@@ -67,32 +78,34 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                     </p>
                 </div>
                 <div className="text-right flex flex-row">
+                    <div>
+                        <svg
+                            className="h-5 w-5 text-gray-500 mr-2 cursor-pointer hover:scale-110 transform duration-200 "
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none" stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            onClick={() => { alert("feature still in dev") }}
+                        >
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                        </svg>
+                    </div>
                     <svg
-                        className="h-6 w-6 text-indigo-500 mr-2 cursor-pointer"
+                        className="h-5 w-5 text-red-500 hover:scale-110 cursor-pointer transform duration-200"
                         viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none" stroke="currentColor"
+                        fill="none"
+                        stroke="currentColor"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        onClick={() => { alert("feature still in dev") }}
-                    >
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                    </svg>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="#EF0107"
-                        className="h-6 w-6 cursor-pointer"
                         onClick={handleDelete}
                     >
-                        <path
-                            d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z" />
-                        <path
-                            fillRule="evenodd"
-                            d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z"
-                            clipRule="evenodd" />
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                     </svg>
+
                 </div>
             </div>
 
@@ -103,26 +116,20 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                         <div className="col-span-2 lg:col-span-1 flex rounded border-2 border-gray-300">
                             <button
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
-                                onClick={() => {
-                                    handleDecrement('attendedHours');
-                                    setAttendedHours(attendedHours - 1);
-                                }}
+                                onClick={() => handleDecrement('attendedHours')}
                             >
-                                -
+                                -  
                             </button>
                             <input
+                                id='attendanceInput'
                                 className="w-12 bg-white text-center"
                                 type="text"
-                                value={attendedHours}
-                                onChange={(e) => setAttendedHours(Number(e.target.value))}
-                                onBlur={handleEdit}
+                                value={course.attendedHours}
+                                onChange={(e) => handleChange(e, 'attendedHours')}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
-                                onClick={() => {
-                                    handleIncrement('attendedHours');
-                                    setAttendedHours(attendedHours + 1);
-                                }}
+                                onClick={() => handleIncrement('attendedHours')}
                             >
                                 +
                             </button>
@@ -136,26 +143,19 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                         <div className="col-span-2 lg:col-span-1 flex rounded border-2 border-gray-300">
                             <button
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
-                                onClick={() => {
-                                    handleDecrement('missedHours');
-                                    setMissedHours(missedHours - 1);
-                                }}
+                                onClick={() => handleDecrement('missedHours')}
                             >
                                 -
                             </button>
                             <input
                                 className="w-12 bg-white text-center"
                                 type="text"
-                                value={missedHours}
-                                onChange={(e) => setMissedHours(Number(e.target.value))}
-                                onBlur={handleEdit}
+                                value={course.missedHours}
+                                onChange={(e) => handleChange(e, 'missedHours')}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
-                                onClick={() => {
-                                    handleIncrement('missedHours');
-                                    setMissedHours(missedHours + 1);
-                                }}
+                                onClick={() => handleIncrement('missedHours')}
                             >
                                 +
                             </button>
@@ -169,26 +169,19 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                         <div className="col-span-2 lg:col-span-1 flex rounded border-2 border-gray-300">
                             <button
                                 className="rounded-sm px-4 bg-gradient-to-b from-white to-gray-300 font-medium w-full"
-                                onClick={() => {
-                                    handleDecrement('unknownHours');
-                                    setUnknownHours(unknownHours - 1);
-                                }}
+                                onClick={() => handleDecrement('unknownHours')}
                             >
                                 -
                             </button>
                             <input
                                 className="w-12 bg-white text-center"
                                 type="text"
-                                value={unknownHours}
-                                onChange={(e) => setUnknownHours(Number(e.target.value))}
-                                onBlur={handleEdit}
+                                value={course.unknownHours}
+                                onChange={(e) => handleChange(e, 'unknownHours')}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
-                                onClick={() => {
-                                    handleIncrement('unknownHours');
-                                    setUnknownHours(unknownHours + 1);
-                                }}
+                                onClick={() => handleIncrement('unknownHours')}
                             >
                                 +
                             </button>

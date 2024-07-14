@@ -7,6 +7,6 @@ export interface Course {
     unknownHours: number;
 };
 
-export type AttendaceFieldType = 'attendedHours' | 'missedHours' | 'unknownHours' | null;
+export type AttendaceFieldType = 'attendedHours' | 'missedHours' | 'unknownHours';
 
 export type Courses = Array<Course>;

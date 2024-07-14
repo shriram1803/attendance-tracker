@@ -38,19 +38,3 @@ export const getAllCourse = async (userId: string, token: string) => {
 
     return await apiRequest(endpoint, method, null, token);
 };
-
-export const incrementAttendance = async (courseId: string, targetField: AttendaceFieldType, token: string) => {
-    const endpoint = `/api/course/increment/${courseId}`;
-    const method = 'PUT';
-    const data = { targetField: targetField };
-
-    return await apiRequest(endpoint, method, data, token);
-};
-
-export const decrementAttendance = async (courseId: string, targetField: AttendaceFieldType, token: string) => {
-    const endpoint = `/api/course/decrement/${courseId}`;
-    const method = 'PUT';
-    const data = { targetField: targetField };
-
-    return await apiRequest(endpoint, method, data, token);
-};

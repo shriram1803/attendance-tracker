@@ -4,10 +4,12 @@ import TopBar from "../components/topbar/TopBar";
 const Main = () => {
 
     return (
-        <>
+        <div className="h-screen flex flex-col">
             <TopBar />
-            <Outlet />
-        </>
+            <div className="flex-1 overflow-y-auto">
+                <Outlet />
+            </div>
+        </div>
     );
 };
 

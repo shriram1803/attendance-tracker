@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { User } from '../types/userType';
 import { loginUser, validateUser, registerUser } from '../apis/userApi';
 import { useNavigate } from 'react-router-dom';
-import { addCourse, decrementAttendance, incrementAttendance, removeCourse, updateCourse } from '../apis/courseApi';
+import { addCourse, removeCourse, updateCourse } from '../apis/courseApi';
 import { AttendaceFieldType, Course } from '../types/courseType';
 
 export interface DataContextType {
@@ -18,8 +18,6 @@ export interface DataContextType {
     add: (courseCode: string, courseName: string) => void;
     edit: (updatedCourse: Course) => void;
     remove: (courseId: string) => void;
-    increment: (courseId: string, targetField: AttendaceFieldType) => void;
-    decrement: (courseId: string, targetField: AttendaceFieldType) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,16 +32,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
     const [user, setUser] = useState<User | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    /*-------------------- CREATE THIS FUNCTION LATER ----------------------*/
-    // const generateUserData: User = (data: any) => {
-    //     return {
-    //         userId: data._id,
-    //         eMail: data.eMail,
-    //         safePercentage: data.safePercentage,
-    //         courses: data.courses
-    //     } as User;
-    // };
+    
     const handleLoginSuccess = (user: any) => {
         localStorage.setItem('token', user.token);
 
@@ -61,21 +50,6 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         setIsLoading(false);
 
         navigate('/');
-    };
-
-    const handleAttendanceUpdation = (user: User, courseId: string, targetField: AttendaceFieldType, value: number) => {
-        if (targetField) {
-            const updatedUser: User = {
-                ...user,
-                courses: user.courses.map((course) =>
-                    course._id === courseId
-                        ? { ...course, [targetField]: course[targetField] + value }
-                        : course
-                ),
-            };
-            
-            setUser(updatedUser);
-        }
     };
 
     const login = (eMail: string, password: string) => {
@@ -125,22 +99,22 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
 
     const edit = (updatedCourse: Course) => {
         updateCourse(
-            updatedCourse._id, 
-            updatedCourse.courseCode, 
-            updatedCourse.courseName, 
-            updatedCourse.attendedHours, 
-            updatedCourse.missedHours, 
-            updatedCourse.unknownHours, 
+            updatedCourse._id,
+            updatedCourse.courseCode,
+            updatedCourse.courseName,
+            updatedCourse.attendedHours,
+            updatedCourse.missedHours,
+            updatedCourse.unknownHours,
             authToken || ''
         ).then((responseData) => {
-                if (user) {
-                    const updatedUser: User = {
-                        ...user,
-                        courses: user.courses.map(course => course._id !== updatedCourse._id ? course : updatedCourse)
-                    } as User;
-                    setUser(updatedUser);
-                }
-            })
+            if (user) {
+                const updatedUser: User = {
+                    ...user,
+                    courses: user.courses.map(course => course._id !== updatedCourse._id ? course : updatedCourse)
+                } as User;
+                setUser(updatedUser);
+            }
+        })
             .catch((error) => {
                 console.error('Error removing user:', error.response ? error.response.data : error.message);
             })
@@ -163,32 +137,6 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 console.error('Error removing user:', error.response ? error.response.data : error.message);
             })
             .finally(() => setIsLoading(false));
-    };
-
-    const increment = (courseId: string, targetField: AttendaceFieldType) => {
-        incrementAttendance(courseId, targetField, authToken || '')
-            .then((responseData) => {
-                if (!user || !targetField) {
-                    throw new Error('Missing required data: ' + (user ? '' : 'user, ') + (targetField ? '' : 'targetField'));
-                }
-                handleAttendanceUpdation(user, courseId, targetField, 1);
-            })
-            .catch((error) => {
-                console.error('Error incrementin:', error.response ? error.response.data : error.message);
-            })
-    };
-
-    const decrement = (courseId: string, targetField: AttendaceFieldType) => {
-        decrementAttendance(courseId, targetField, authToken || '')
-            .then((responseData) => {
-                if (!user || !targetField) {
-                    throw new Error('Missing required data: ' + (user ? '' : 'user, ') + (targetField ? '' : 'targetField'));
-                }
-                handleAttendanceUpdation(user, courseId, targetField, -1);
-            })
-            .catch((error) => {
-                console.error('Error decrementing:', error.response ? error.response.data : error.message);
-            })
     };
 
     useEffect(() => {
@@ -245,9 +193,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 logout,
                 add,
                 edit,
-                remove,
-                increment,
-                decrement
+                remove
             }}
         >
             {children}
