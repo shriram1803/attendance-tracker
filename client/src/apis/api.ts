@@ -1,4 +1,4 @@
-import url from "../constants/apiUrl";
+import url from "../utils/apiUrl";
 
 interface ApiConfig extends RequestInit {
     headers: {

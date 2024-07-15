@@ -1,48 +1,21 @@
 import { useEffect, useState } from "react";
 import { useDataContext } from "../../contexts/dataContext";
 import { User } from "../../types/userType";
-import { setSelectionRange } from "@testing-library/user-event/dist/utils";
+import { useNavigate } from "react-router-dom";
+import Loading from "../../components/loading/Loading";
 
 
 const ProfilePage = () => {
-    const { user } = useDataContext();
+    const navigate = useNavigate();
 
-    const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
-    const [currentUser, setCurrentUser] = useState<User>(user as User);
-    const [safePercentage, setSafePercentage] = useState<string>(String(user?.safePercentage));
+    const { user, updateProfile, isLoading } = useDataContext();
+
+    const [currentUser, setCurrentUser] = useState<User | null>(user);
+    const [safePercentage, setSafePercentage] = useState<string>('');
     const [error, setError] = useState<string>('');
 
-
-    const isNumber = (value: string): boolean => {
-        return !isNaN(parseFloat(value));
-    };
-
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentUser({
-            ...user,
-            eMail: e.target.value
-        } as User);
-        setEnableSubmit(true);
-    };
-
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentUser({
-            ...user,
-            password: e.target.value
-        } as User);
-        setEnableSubmit(true);
-    };
-
-    const handleSafePercentageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if ((Number(e.target.value) >= 0 && Number(e.target.value) <= 100))
-            setCurrentUser({
-                ...user,
-                safePercentage: parseInt(e.target.value)
-            } as User);
-    };
-
     const getValidPercentage = (percentage: string): number => {
-        if(0 <= Number(percentage) && Number(percentage) <= 100) {
+        if (0 <= Number(percentage) && Number(percentage) <= 100) {
             return Number(percentage);
         }
 
@@ -51,49 +24,99 @@ const ProfilePage = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name: string = e.target.name;
-        const value: string | number = name === 'safePercentage' ? getValidPercentage(e.target.value) : e.target.value;
+        const value: string = e.target.value;
         setCurrentUser({
-            ...user,
-            name: value
+            ...currentUser,
+            [name]: value
         } as User);
-        setEnableSubmit(true);
     };
 
     const handleSubmit = () => {
-
+        if (currentUser) 
+            updateProfile({ ...currentUser, safePercentage: Number(safePercentage) });
     };
 
     const handleReset = () => {
         if (user)
-            setCurrentUser(user);
-        setEnableSubmit(false);
+            setCurrentUser({ ...user, password: '' });
     };
 
-    if (!user)
-        return <></>;
+    useEffect(() => {
+        if (user) {
+            setCurrentUser(user);
+            setSafePercentage(String(user?.safePercentage || 0));
+        }
+    }, [user]);
+
+    if (isLoading || !user)
+        return <Loading />;
 
     return (
-        <div className="flex flex-col">
-            <div>
-                E-Mail: <input type="text" name="eMail" value={currentUser.eMail} onChange={handleEmailChange} required />
-            </div>
-            <div>
-                Password: <input type="password" name="password" value={currentUser.password} onChange={handlePasswordChange} />
-            </div>
-            <div>
-                Safe Percentage: <input type="number" name="safePercentage" value={currentUser.safePercentage} onChange={handleSafePercentageChange} required />
-            </div>
-            <div>
-                <button type="submit" disabled={!enableSubmit}>
-                    Submit
-                </button>
-                <button type="submit" disabled={!enableSubmit} onClick={handleReset}>
-                    Reset
-                </button>
-            </div>
-            <div className="text-red-500">
-                {error}
-            </div>
+        <div className="container mx-auto p-4">
+            <div className="text-2xl font-semibold text-gray-800 mb-3">Profile</div>
+            <form onSubmit={handleSubmit}>
+                <div className="mb-4 flex flex-col md:flex-row md:items-center">
+                    <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="eMail">
+                        E-Mail
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
+                        type="text"
+                        id="eMail"
+                        name="eMail"
+                        value={currentUser?.eMail}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-4 flex flex-col md:flex-row md:items-center">
+                    <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="password">
+                        Password
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={currentUser?.password}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="mb-4 flex flex-col md:flex-row md:items-center">
+                    <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="safePercentage">
+                        Safe Percentage
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
+                        type="number"
+                        id="safePercentage"
+                        name="safePercentage"
+                        value={safePercentage}
+                        onChange={(e) => {
+                            if (Number(e.target.value) >= 0 && Number(e.target.value) <= 100)
+                                setSafePercentage(e.target.value);
+                        }}
+                        required
+                    />
+                </div>
+                <div className="mb-4 flex flex-col md:flex-row md:items-center">
+                    <button
+                        type="button"
+                        className="cursor-pointer mt-3 bg-gray-600 hover:bg-gray-500 text-white py-2 w-full md:w-40 rounded focus:outline-none focus:shadow-outline"
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </button>
+                    <button
+                        type="button"
+                        className="cursor-pointer mt-3 md:ml-3 border-2 border-gray-600 bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 w-full md:w-40 rounded focus:outline-none focus:shadow-outline"
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </button>
+                </div>
+                {error && <div className="text-red-500">{error}</div>}
+            </form>
         </div>
     )
 };

@@ -56,9 +56,8 @@ export const login = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-        const { eMail, password, safePercentage } = req.body;
-        const user: User = await userModel.findById(id).populate('courses');
+        const { userId, eMail, password, safePercentage } = req.body;
+        const user: User = await userModel.findById(userId).populate('courses');
 
         if (!user) {
             return res.status(401).json({ error: "User Not Available" });
@@ -72,7 +71,7 @@ export const updateUser = async (req: Request, res: Response) => {
             safePercentage: safePercentage || user.safePercentage
         } as User;
 
-        await userModel.findOneAndUpdate({eMail: eMail}, updatedUser);
+        await userModel.findByIdAndUpdate(userId, updatedUser);
         
         res.status(200).json({ message: "Updated user" });
     } catch (err) {

@@ -5,7 +5,7 @@ const Main = () => {
 
     return (
         <div className="h-screen flex flex-col">
-            <TopBar />
+            <TopBar />   
             <div className="flex-1 overflow-y-auto">
                 <Outlet />
             </div>

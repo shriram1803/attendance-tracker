@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, HtmlHTMLAttributes } from "react";
+import { useState, useCallback } from "react";
 import { debounce } from "lodash";
 import { AttendaceFieldType, Course } from "../../types/courseType";
 import { useDataContext } from "../../contexts/dataContext";
@@ -20,6 +20,8 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
     const percent: number = Number((course.attendedHours * 100 / totalHours).toFixed(2)) || 0;
 
     const pseudoPercent: number = Number(((course.attendedHours + course.unknownHours) * 100 / totalHours).toFixed(2)) || 0;
+
+    const safe: number = Number(user?.safePercentage || '75');
 
 
     const handleEdit = (course: Course) => {
@@ -62,10 +64,9 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         });
     };
 
-
-    const displayColor: string = (percent >= (user?.safePercentage || 75))
+    const displayColor: string = (percent >= safe)
         ? 'bg-lime-400'
-        : (pseudoPercent >= (user?.safePercentage || 75))
+        : (pseudoPercent >= safe)
             ? 'bg-yellow-500'
             : 'bg-red-500';
 
@@ -86,9 +87,9 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none" stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             onClick={() => navigate(`/edit/${course._id}`)}
                         >
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -99,9 +100,9 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         onClick={handleDelete}
                     >
                         <polyline points="3 6 5 6 21 6" />
@@ -123,7 +124,6 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                                 -  
                             </button>
                             <input
-                                id='attendanceInput'
                                 className="w-12 bg-white text-center"
                                 name="attendedHours"
                                 type="text"

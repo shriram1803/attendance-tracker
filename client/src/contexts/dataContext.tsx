@@ -1,9 +1,11 @@
+// src/contexts/DataContext.js
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { User } from '../types/userType';
-import { loginUser, validateUser, registerUser } from '../apis/userApi';
 import { useNavigate } from 'react-router-dom';
+import { User } from '../types/userType';
+import { loginUser, validateUser, registerUser, updateUser } from '../apis/userApi';
 import { addCourse, removeCourse, updateCourse } from '../apis/courseApi';
-import { AttendaceFieldType, Course } from '../types/courseType';
+import { Course } from '../types/courseType';
+import { errorToast, successToast } from '../utils/toaster';
 
 export interface DataContextType {
     user: User | null;
@@ -18,6 +20,7 @@ export interface DataContextType {
     add: (courseCode: string, courseName: string) => void;
     edit: (updatedCourse: Course) => void;
     remove: (courseId: string) => void;
+    updateProfile: (user: User) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -44,9 +47,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         } as User;
 
         setUser(userData);
-
         setAuthToken(user.token);
-
         setIsLoading(false);
 
         navigate('/');
@@ -56,9 +57,11 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         loginUser(eMail, password)
             .then((responseData) => {
                 handleLoginSuccess(responseData);
+                successToast('Logged In');
             })
             .catch((error) => {
-                console.error('Error loggin in user:', error.response ? error.response.data : error.message);
+                console.error('Error logging in user:', error.response ? error.response.data : error.message);
+                errorToast('Error logging in');
             });
     };
 
@@ -66,9 +69,11 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         registerUser(email, password, Number(safePercentage))
             .then((responseData) => {
                 handleLoginSuccess(responseData);
+                successToast('Registered Successfully');
             })
             .catch((error) => {
                 console.error('Error registering user:', error.response ? error.response.data : error.message);
+                errorToast('Error registering');
             });
     };
 
@@ -77,6 +82,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         setAuthToken(null);
         setUser(null);
         navigate('/');
+        successToast('Logged Out');
     };
 
     const add = (courseCode: string, courseName: string) => {
@@ -88,11 +94,12 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                         ...user,
                         courses: [...user.courses, responseData]
                     } as User);
-                    alert('Added Course!!');
+                    successToast('Course Added');
                 }
             })
             .catch((error) => {
                 console.error('Error adding course:', error.response ? error.response.data : error.message);
+                errorToast('Error adding course');
             })
             .finally(() => setIsLoading(false));
     };
@@ -114,11 +121,13 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 } as User;
                 setUser(updatedUser);
                 navigate('/');
+                successToast('Course Updated');
             }
         })
             .catch((error) => {
-                console.error('Error removing user:', error.response ? error.response.data : error.message);
-            })
+                console.error('Error updating course:', error.response ? error.response.data : error.message);
+                errorToast('Error updating course');
+            });
     };
 
     const remove = (courseId: string) => {
@@ -130,12 +139,35 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                         ...user,
                         courses: user.courses.filter(course => course._id !== courseId)
                     } as User;
-
                     setUser(updatedUser);
+                    successToast('Course Removed');
                 }
             })
             .catch((error) => {
-                console.error('Error removing user:', error.response ? error.response.data : error.message);
+                console.error('Error removing course:', error.response ? error.response.data : error.message);
+                errorToast('Error removing course');
+            })
+            .finally(() => setIsLoading(false));
+    };
+
+    const updateProfile = (profile: User) => {        
+        setIsLoading(true);
+        updateUser(profile.eMail, profile?.password || '', profile.safePercentage, authToken || '')
+            .then((responseData) => {
+                if (user) {
+                    const updatedUser: User = {
+                        userId: user.userId,
+                        eMail: profile.eMail,
+                        safePercentage: profile.safePercentage,
+                        courses: user.courses
+                    } as User;
+                    setUser(updatedUser);
+                    successToast('Profile Updated');
+                }
+            })
+            .catch((error) => {
+                console.error('Error updating profile:', error.response ? error.response.data : error.message);
+                errorToast('Error updating profile');
             })
             .finally(() => setIsLoading(false));
     };
@@ -152,14 +184,14 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
 
         const loadUserData = async () => {
             await validateUser(authToken || '')
-                .then((response) => {
+                .then((responseData) => {
                     console.log('User validated successfully');
 
                     const userData: User = {
-                        userId: response._id,
-                        eMail: response.eMail,
-                        safePercentage: response.safePercentage,
-                        courses: response.courses
+                        userId: responseData._id,
+                        eMail: responseData.eMail,
+                        safePercentage: responseData.safePercentage,
+                        courses: responseData.courses
                     } as User;
 
                     setUser(userData);
@@ -167,10 +199,10 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 .catch((error) => {
                     // logout();
                     console.error('Error validating user:', error.response ? error.response.data : error.message);
+                    errorToast('Error validating user');
                 })
                 .finally(() => setIsLoading(false));
         };
-
 
         if (authToken) {
             loadUserData();
@@ -194,7 +226,8 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 logout,
                 add,
                 edit,
-                remove
+                remove,
+                updateProfile
             }}
         >
             {children}

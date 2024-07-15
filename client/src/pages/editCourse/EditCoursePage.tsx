@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDataContext } from '../../contexts/dataContext';
-import { Course, Courses } from '../../types/courseType';
+import { Course } from '../../types/courseType';
 import { useNavigate, useParams } from 'react-router-dom';
 
 
 const EditCoursePage: React.FC = () => {
   const navigate = useNavigate();
+
   const { user, edit } = useDataContext();
 
   const { courseId } = useParams<{ courseId: string }>();
@@ -28,26 +29,21 @@ const EditCoursePage: React.FC = () => {
     edit(course);
   };
 
+  const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    setCourse(currentCourse);
+  };
+
+  useEffect(() => {
+    setCourse(currentCourse);
+  }, [user]);
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Course</h1>
+      <h1 className="text-gray-700 text-2xl font-semibold mb-4">Edit Course</h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseId">
-            Course ID
-          </label>
-          <input
-            type="text"
-            id="courseId"
-            name="_id"
-            value={course._id}
-            onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseCode">
+        <div className="mb-4 flex flex-col md:flex-row md:items-center">
+          <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="courseCode">
             Course Code
           </label>
           <input
@@ -56,12 +52,12 @@ const EditCoursePage: React.FC = () => {
             name="courseCode"
             value={course.courseCode}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courseName">
+        <div className="mb-4 flex flex-col md:flex-row md:items-center">
+          <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="courseName">
             Course Name
           </label>
           <input
@@ -70,12 +66,12 @@ const EditCoursePage: React.FC = () => {
             name="courseName"
             value={course.courseName}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="attendedHours">
+        <div className="mb-4 flex flex-col md:flex-row md:items-center">
+          <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="attendedHours">
             Attended Hours
           </label>
           <input
@@ -84,12 +80,12 @@ const EditCoursePage: React.FC = () => {
             name="attendedHours"
             value={course.attendedHours}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="missedHours">
+        <div className="mb-4 flex flex-col md:flex-row md:items-center">
+          <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="missedHours">
             Missed Hours
           </label>
           <input
@@ -98,12 +94,12 @@ const EditCoursePage: React.FC = () => {
             name="missedHours"
             value={course.missedHours}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="unknownHours">
+        <div className="mb-4 flex flex-col md:flex-row md:items-center">
+          <label className="block text-gray-600 w-48 text-md font-bold mb-2" htmlFor="unknownHours">
             Unknown Hours
           </label>
           <input
@@ -112,15 +108,22 @@ const EditCoursePage: React.FC = () => {
             name="unknownHours"
             value={course.unknownHours}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
             required
           />
         </div>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="mt-3 bg-gray-600 hover:bg-gray-500 text-white py-2 w-full md:w-40 rounded focus:outline-none focus:shadow-outline"
         >
           Update Course
+        </button>
+        <button
+          type="submit"
+          className="mt-3 md:ml-3 border-2 border-gray-600 bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 w-full md:w-40 rounded focus:outline-none focus:shadow-outline"
+          onClick={handleReset}
+        >
+          Reset 
         </button>
       </form>
     </div>

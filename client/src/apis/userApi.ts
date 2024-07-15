@@ -16,8 +16,8 @@ export const registerUser = async (eMail: string, password: string, safePercenta
     return await apiRequest(endpoint, method, data);
 };
 
-export const updateUser = async (id: string, eMail: string, password: string, safePercentage: number, token: string) => {
-    const endpoint = `/api/user/update/${id}`;
+export const updateUser = async (eMail: string, password: string, safePercentage: number, token: string) => {
+    const endpoint = `/api/user/update`;
     const method = 'PUT';
     const data = { eMail, password, safePercentage };
 
