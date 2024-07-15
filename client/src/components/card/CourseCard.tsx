@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, HtmlHTMLAttributes } from "react";
 import { debounce } from "lodash";
 import { AttendaceFieldType, Course } from "../../types/courseType";
 import { useDataContext } from "../../contexts/dataContext";
+import { useNavigate } from "react-router-dom";
 
 interface CourseCardProps {
     index: number;
@@ -9,6 +10,7 @@ interface CourseCardProps {
 };
 
 const CourseCard = (props: CourseCardProps): React.ReactElement => {
+    const navigate = useNavigate();
     const { user, edit, remove } = useDataContext();
 
     const [course, setCourse] = useState<Course>(props.course);
@@ -39,10 +41,10 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         debounceHandler(updatedCourse);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, targetField: AttendaceFieldType) => {        
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {        
         setChange({
             ...course,
-            [targetField]: Number(e.target.value)
+            [e.target.name]: Number(e.target.value)
         });
     };
 
@@ -87,7 +89,7 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             stroke-width="2"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            onClick={() => { alert("feature still in dev") }}
+                            onClick={() => navigate(`/edit/${course._id}`)}
                         >
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                         </svg>
@@ -123,9 +125,10 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             <input
                                 id='attendanceInput'
                                 className="w-12 bg-white text-center"
+                                name="attendedHours"
                                 type="text"
                                 value={course.attendedHours}
-                                onChange={(e) => handleChange(e, 'attendedHours')}
+                                onChange={handleChange}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
@@ -150,8 +153,9 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             <input
                                 className="w-12 bg-white text-center"
                                 type="text"
+                                name="missedHours"
                                 value={course.missedHours}
-                                onChange={(e) => handleChange(e, 'missedHours')}
+                                onChange={handleChange}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"
@@ -176,8 +180,9 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
                             <input
                                 className="w-12 bg-white text-center"
                                 type="text"
+                                name="unknownHours"
                                 value={course.unknownHours}
-                                onChange={(e) => handleChange(e, 'unknownHours')}
+                                onChange={handleChange}
                             />
                             <button
                                 className="rounded-sm px-4 w-full bg-gradient-to-b from-white to-gray-300 font-medium"

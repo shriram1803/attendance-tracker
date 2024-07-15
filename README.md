@@ -1,5 +1,5 @@
 A very simple attendance tracker built for my personal use.
-Feel free to use it if your college also has a broken student portal. JK :)
+Feel free to use it if your college too has a broken student portal. JK :)
 
 #### Building & Running Backend
 Create a .env file with the same configuration as the .sample.env file.

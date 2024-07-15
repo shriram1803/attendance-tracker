@@ -43,7 +43,10 @@ const TopBar = () => {
                         <button
                             type="submit"
                             className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-300 transition"
-                            onClick={() => navigate('/profile')}
+                            onClick={() => {
+                                setDropDown(false);
+                                navigate('/profile');
+                            }}
                         >
                             Profile
                         </button>

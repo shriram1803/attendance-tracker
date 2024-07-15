@@ -32,7 +32,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
     const [user, setUser] = useState<User | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    
+
     const handleLoginSuccess = (user: any) => {
         localStorage.setItem('token', user.token);
 
@@ -113,6 +113,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     courses: user.courses.map(course => course._id !== updatedCourse._id ? course : updatedCourse)
                 } as User;
                 setUser(updatedUser);
+                navigate('/');
             }
         })
             .catch((error) => {
