@@ -121,7 +121,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 } as User;
                 setUser(updatedUser);
                 navigate('/');
-                successToast('Course Updated');
+                // successToast('Course Updated');
             }
         })
             .catch((error) => {
@@ -197,7 +197,6 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     setUser(userData);
                 })
                 .catch((error) => {
-                    // logout();
                     console.error('Error validating user:', error.response ? error.response.data : error.message);
                     errorToast('Error validating user');
                 })

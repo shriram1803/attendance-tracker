@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import { AttendaceFieldType, Course } from "../../types/courseType";
 import { useDataContext } from "../../contexts/dataContext";
-import { useNavigate } from "react-router-dom";
 
 interface CourseCardProps {
     index: number;
@@ -43,11 +43,12 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
         debounceHandler(updatedCourse);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {        
-        setChange({
-            ...course,
-            [e.target.name]: Number(e.target.value)
-        });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {  
+        if(!isNaN(Number(e.target.value)))      
+            setChange({
+                ...course,
+                [e.target.name]: Number(e.target.value)
+            });
     };
 
     const handleIncrement = (targetField: AttendaceFieldType) => {
@@ -58,10 +59,11 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
     };
 
     const handleDecrement = (targetField: AttendaceFieldType) => {
-        setChange({
-            ...course,
-            [targetField]: course[targetField] - 1
-        });
+        if(course[targetField] > 0)
+            setChange({
+                ...course,
+                [targetField]: course[targetField] - 1
+            });
     };
 
     const displayColor: string = (percent >= safe)

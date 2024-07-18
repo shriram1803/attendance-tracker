@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDataContext } from '../../contexts/dataContext';
 import { Course } from '../../types/courseType';
-import { useNavigate, useParams } from 'react-router-dom';
-
+import { successToast } from '../../utils/toaster';
 
 const EditCoursePage: React.FC = () => {
-  const navigate = useNavigate();
-
   const { user, edit } = useDataContext();
 
   const { courseId } = useParams<{ courseId: string }>();
@@ -27,6 +25,7 @@ const EditCoursePage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     edit(course);
+    successToast('Course Updated');
   };
 
   const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

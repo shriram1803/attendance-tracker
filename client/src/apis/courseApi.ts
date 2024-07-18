@@ -1,4 +1,3 @@
-import { AttendaceFieldType } from "../types/courseType";
 import apiRequest from "./api";
 
 export const addCourse = async (courseCode: string, courseName: string, token?: string) => {

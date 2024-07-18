@@ -1,26 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDataContext } from "../../contexts/dataContext";
 import { User } from "../../types/userType";
-import { useNavigate } from "react-router-dom";
 import Loading from "../../components/loading/Loading";
 
 
 const ProfilePage = () => {
-    const navigate = useNavigate();
-
     const { user, updateProfile, isLoading } = useDataContext();
 
     const [currentUser, setCurrentUser] = useState<User | null>(user);
     const [safePercentage, setSafePercentage] = useState<string>('');
     const [error, setError] = useState<string>('');
-
-    const getValidPercentage = (percentage: string): number => {
-        if (0 <= Number(percentage) && Number(percentage) <= 100) {
-            return Number(percentage);
-        }
-
-        return user?.safePercentage || 0;
-    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name: string = e.target.name;
@@ -32,6 +21,13 @@ const ProfilePage = () => {
     };
 
     const handleSubmit = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(currentUser?.eMail || '')) {
+            setError('Invalid email address');
+            return;
+        }
+        
+        setError('');
         if (currentUser) 
             updateProfile({ ...currentUser, safePercentage: Number(safePercentage) });
     };
