@@ -20,9 +20,6 @@ const Login = () => {
             navigate('/');
     }, [authToken]);
 
-    if(isLoading)
-        return <Loading />;
-
     return (
         <div className="flex justify-center items-center h-full">
             <div className="py-4 px-8 rounded border-2 border-gray-300 shadow-lg h-1/3 flex items-center">
