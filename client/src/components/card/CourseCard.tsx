@@ -78,8 +78,8 @@ const CourseCard = (props: CourseCardProps): React.ReactElement => {
             <div className="row-span-3 md:row-span-1 flex flex-row justify-between text-sm font-medium border-b-2 border-gray-600 p-2 bg-gray-200 rounded-t-lg">
                 <div className="text-left">
                     <p className="cursor-default hover:text-gray-700" title={course.courseName}>
-                        {course.courseName.slice(0, 25)}
-                        {course.courseName.length > 25 && '...'}
+                        {course.courseCode + ' - ' + course.courseName.slice(0, 20)}
+                        {course.courseName.length > 20 && '...'}
                     </p>
                 </div>
                 <div className="text-right flex flex-row">

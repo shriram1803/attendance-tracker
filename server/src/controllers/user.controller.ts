@@ -15,6 +15,12 @@ export const addUser = async (req: Request, res: Response) => {
     try {
         const { eMail, password, safePercentage } = req.body;
         const hashedPassword: string = await bcrypt.hash(password, 10);
+
+        const fetch: User = await userModel.findOne({ eMail: eMail });
+
+        if(fetch) 
+            return res.status(401).json({ error: "User e-Mail already exists" });
+
         const user: User = new userModel({
             eMail: eMail,
             password: hashedPassword,
@@ -38,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
         const user: User = await userModel.findOne({ eMail: eMail }).populate('courses');
 
         if (!user) {
-            return res.status(401).json({ error: "User Not Available" });
+            return res.status(404).json({ error: "User Not Available" });
         }
 
         const passwordMatch: boolean = await bcrypt.compare(password, user.password);
@@ -60,7 +66,7 @@ export const updateUser = async (req: Request, res: Response) => {
         const user: User = await userModel.findById(userId).populate('courses');
 
         if (!user) {
-            return res.status(401).json({ error: "User Not Available" });
+            return res.status(404).json({ error: "User Not Available" });
         }
 
         const hashedPassword: string | null = password ? await bcrypt.hash(password, 10) : null;
@@ -86,7 +92,7 @@ export const validateUser = async (req: Request, res: Response) => {
         const user: User = await userModel.findById(userId).populate('courses');
 
         if (!user) {
-            return res.status(401).json({ error: "User Not Available" });
+            return res.status(404).json({ error: "User Not Available" });
         }
         
         res.status(200).json(user);

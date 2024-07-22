@@ -61,7 +61,13 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
             })
             .catch((error) => {
                 console.error('Error logging in user:', error.response ? error.response.data : error.message);
-                errorToast('Error logging in');
+
+                if(error.status === 404)
+                    errorToast('e-Mail not registered');
+                else if(error.status === 401)
+                    errorToast('Wrong Password');
+                else
+                    errorToast('Error logging in');
             });
     };
 
@@ -73,7 +79,11 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
             })
             .catch((error) => {
                 console.error('Error registering user:', error.response ? error.response.data : error.message);
-                errorToast('Error registering');
+
+                if(error.status === 401)
+                    errorToast('e-Mail already registered');
+                else
+                    errorToast('Error registering');
             });
     };
 
@@ -82,7 +92,6 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         setAuthToken(null);
         setUser(null);
         navigate('/');
-        successToast('Logged Out');
     };
 
     const add = (courseCode: string, courseName: string) => {
@@ -198,6 +207,10 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                 })
                 .catch((error) => {
                     console.error('Error validating user:', error.response ? error.response.data : error.message);
+
+                    if(error.status === 400 || error.status === 401)
+                        logout();
+
                     errorToast('Error validating user');
                 })
                 .finally(() => setIsLoading(false));

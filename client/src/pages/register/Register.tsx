@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDataContext } from "../../contexts/dataContext";
 
 const Register = () => {
     const navigate = useNavigate();
-    const { register } = useDataContext();
+    const { authToken, register } = useDataContext();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [safePercentage, setSafePercentage] = useState<string>('');
@@ -23,6 +23,11 @@ const Register = () => {
         setError('');
         register(email, password, safePercentage);
     };
+
+    useEffect(() => {
+        if(authToken)
+            navigate('/');
+    }, [authToken]);
 
     return (
         <div className="flex justify-center items-center h-full">

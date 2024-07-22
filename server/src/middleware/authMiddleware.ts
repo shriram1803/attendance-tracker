@@ -5,7 +5,7 @@ import { jwtSecret } from "../config/index.js";
 const verifyToken = (req: Request, res: Response, next: any) => {
     const authHeader: string = req.header('Authorization') || '';
     const token: string = authHeader && authHeader.split(' ')[1] || ''; 
-    if (!token) return res.status(401).json({ error: 'Access denied' });
+    if (!token) return res.status(400).json({ error: 'Access denied' });
     try {
         const decoded = jwt.verify(token, jwtSecret);
         req.body.userId = decoded.userId;

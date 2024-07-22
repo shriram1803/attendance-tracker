@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDataContext } from "../../contexts/dataContext";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../components/loading/Loading";
 
 const Login = () => {
     const navigate = useNavigate();
 
-    const { login } = useDataContext();
+    const { authToken, login, isLoading } = useDataContext();
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -13,6 +14,14 @@ const Login = () => {
     const handleLoginSubmit = () => {
         login(email, password);
     };
+
+    useEffect(() => {
+        if(authToken)
+            navigate('/');
+    }, [authToken]);
+
+    if(isLoading)
+        return <Loading />;
 
     return (
         <div className="flex justify-center items-center h-full">

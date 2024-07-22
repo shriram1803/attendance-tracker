@@ -37,7 +37,7 @@ export const updateCourse = async (req: Request, res: Response) => {
         const course: Course = await courseModel.findById(courseId);
 
         if(!course) {
-            return res.status(401).json({message: 'Course not avaiable'});
+            return res.status(404).json({message: 'Course not avaiable'});
         }
         
         const updatedCourseDetails: Course = {
@@ -64,7 +64,7 @@ export const removeCourse = async (req: Request, res: Response) => {
         const deleted: boolean = await courseModel.findByIdAndDelete(courseId);
 
         if(!deleted) {
-            return res.status(401).json({error: "id not found"});
+            return res.status(404).json({error: "id not found"});
         }
 
         const user: User = await userModel.findById(userId);
@@ -84,6 +84,10 @@ export const getCourse = async (req: Request, res: Response) => {
         const { courseId } = req.params;
         
         const course: Course = await courseModel.findById(courseId);
+        
+        if(!course) {
+            return res.status(404).json({message: 'Course not avaiable'});
+        }
 
         res.status(200).json(course);
     } catch(err) {
@@ -96,6 +100,10 @@ export const getAllCourses = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         const user: User = await userModel.findOne({_id: id}).populate('courses');
+        
+        if(!user) {
+            return res.status(404).json({message: 'User not avaiable'});
+        }
 
         res.status(200).json(user.courses);
     } catch(err) {
