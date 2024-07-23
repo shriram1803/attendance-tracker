@@ -34,7 +34,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
 
     const [user, setUser] = useState<User | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleLoginSuccess = (user: any) => {
         localStorage.setItem('token', user.token);
@@ -54,6 +54,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
     };
 
     const login = (eMail: string, password: string) => {
+        setIsLoading(true);
         loginUser(eMail, password)
             .then((responseData) => {
                 handleLoginSuccess(responseData);
@@ -68,10 +69,12 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     errorToast('Wrong Password');
                 else
                     errorToast('Error logging in');
-            });
+            })
+            .finally(() => setIsLoading(false));
     };
 
     const register = (email: string, password: string, safePercentage: string) => {
+        setIsLoading(true);
         registerUser(email, password, Number(safePercentage))
             .then((responseData) => {
                 handleLoginSuccess(responseData);
@@ -84,7 +87,8 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
                     errorToast('e-Mail already registered');
                 else
                     errorToast('Error registering');
-            });
+            })
+            .finally(() => setIsLoading(false));
     };
 
     const logout = () => {
@@ -192,6 +196,7 @@ export const DataContextProvider: React.FC<DataContextProviderProps> = ({ childr
         };
 
         const loadUserData = async () => {
+            setIsLoading(true);
             await validateUser(authToken || '')
                 .then((responseData) => {
                     console.log('User validated successfully');

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDataContext } from "../../contexts/dataContext";
+import Loading from "../../components/loading/Loading";
 
 const Register = () => {
     const navigate = useNavigate();
-    const { authToken, register } = useDataContext();
+    const { authToken, register, isLoading } = useDataContext();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [safePercentage, setSafePercentage] = useState<string>('');
@@ -28,6 +29,9 @@ const Register = () => {
         if(authToken)
             navigate('/');
     }, [authToken]);
+
+    if(isLoading)
+        return <Loading />;
 
     return (
         <div className="flex justify-center items-center h-full">
